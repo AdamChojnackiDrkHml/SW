@@ -55,12 +55,13 @@ class Wheels {
         void setSpeed(uint8_t);
         void setSpeedRight(uint8_t);
         void setSpeedLeft(uint8_t);
+        float r = 4.0;
+        float circuit = 2 * r * 3.14;
+        float maxSpeed = 662 / 50.0;
 
     private: 
         int pinsRight[3];
         int pinsLeft[3];
-        float radius; //promień koła
-        float perimeter = 2 * math::pi * radius; //obwód koła
 };
 
 

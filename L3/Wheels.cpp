@@ -80,26 +80,18 @@ void Wheels::forward()
 
 void Wheels::goForward(int cm)
 {
-    float rotation = cm / this->perimeter;
-    uint8_t speed = 60;
-    this->setSpeed(speed);
-    //prędkość trzeba będzie przeliczyć na obroty na ms
-    long time = (long) rotation / speed;
+    this->setSpeed(255);
+    //prędkość trzeba będzie przeliczyć na obroty na ms 
     this->forward();
-    long start = milis()
-    while(milis() - start < time) {};
+    delay(665);
     this->stop();
 }
 
 void Wheels::goBack(int cm)
 {
-    float rotation = cm / this->perimeter;
-    uint8_t speed = 60;
-    this->setSpeed(speed);
-    long time = (long) rotation / speed;
+    this->setSpeed(255);
     this->back();
-    long start = milis()
-    while(milis() - start < time) {};
+    delay(665);
     this->stop();
 }
 
