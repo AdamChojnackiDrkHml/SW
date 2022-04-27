@@ -109,9 +109,11 @@ void Wheels::stop()
 void Wheels::goForward(int cm)
 {
     //odległość na dziurkę 2*pi*r / 20
-    int toGo = this->cnt1 + (int)((double)cm / this->perHole);
+    int toGo = (int)((double)cm / this->perHole);
+    toGo *= 2;
+    toGo += this->cnt1;
+    this->forward();
     while(this->cnt1 < toGo) {
-        this->forward();
     }
 
     this->stop();
@@ -119,8 +121,13 @@ void Wheels::goForward(int cm)
 
 void Wheels::goBack(int cm)
 {
-    this->setSpeed(255);
+    //odległość na dziurkę 2*pi*r / 20
+    int toGo = (int)((double)cm / this->perHole);
+    toGo *= 2;
+    toGo += this->cnt1;
     this->back();
-    delay(665);
+    while(this->cnt1 < toGo) {
+    }
+
     this->stop();
 }

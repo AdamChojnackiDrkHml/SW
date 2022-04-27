@@ -27,8 +27,8 @@ class Wheels {
         void setSpeedLeft(uint8_t);
         void goForward(int cm);
         void goBack(int cm);
-        float radius = 4.5;
-        float perHole = 2 * 3.14 * radius / 20.0;
+        float diameter = 4.5;
+        float perHole = 3.14 * diameter / 20.0;
         volatile int cnt0, cnt1;
 
     private: 

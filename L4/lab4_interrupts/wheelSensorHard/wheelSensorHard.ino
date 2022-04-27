@@ -25,6 +25,7 @@ void setup() {
   PCICR  = 0x02;  // włącz pin change interrupt dla 1 grupy (A0..A5)
   PCMSK1 = 0x03;  // włącz przerwanie dla A0, A1
   w.goForward(60);
+  w.goBack(60);
 }
 
 void loop() {
