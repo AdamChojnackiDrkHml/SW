@@ -30,6 +30,8 @@ class Wheels {
         float diameter = 4.5;
         float perHole = 3.14 * diameter / 20.0;
         volatile int cnt0, cnt1;
+        void turnLeft();
+        void turnRight();
 
     private: 
         int pinsRight[3];
