@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
 #include "Wheels.h"
-
 //
 //#define SET_MOVEMENT(side,f,b) ( digitalWrite( side[0], f ) ); digitalWrite( side[1], b ) )
 
@@ -108,35 +107,46 @@ void Wheels::stop()
 
 void Wheels::goForward(int cm)
 {
+    this->cnt1 = 0;
+    this->cnt0 = 0;
     //odległość na dziurkę 2*pi*r / 20
-    int toGo = (int)((double)cm / this->perHole);
-    toGo *= 2;
+    int toGo = (int)(cm * 0.9) * 2;
+    Serial.print("Forward holes");
+    Serial.println(toGo);
     this->forward();
-    while(this->cnt1 < toGo) {
+    while((this->cnt1+this->cnt0)/2 <= toGo) {
       
     }
-
+    Serial.print("Forward after");
+    Serial.println(this->cnt1);
     this->stop();
     this->cnt1 = 0;
+    this->cnt0 = 0;
 }
 
 void Wheels::goBack(int cm)
 {
+    this->cnt1 = 0;
+    this->cnt0 = 0;
     //odległość na dziurkę 2*pi*r / 20
-    int toGo = (int)((double)cm / this->perHole);
-    toGo *= 2;
+    int toGo = (int)(cm * 0.9) * 2;
+
     this->back();
-    while(this->cnt1 < toGo) {
+    while((this->cnt1+this->cnt0)/2 <= toGo) {
     }
 
     this->stop();
     this->cnt1 = 0;
+    this->cnt0 = 0;
 }
 
-void Wheels::turnLeft()
+int Wheels::turnLeft(int angle)
 {
-  int toGo = (int)((double)35 / this->perHole);
-  toGo *= 2;
+    this->cnt1 = 0;
+    this->cnt0 = 0;
+  int toGo = (int)(this->holesPerAngle * (float)angle);
+  Serial.print("Left before ");
+  Serial.println(this->cnt0);
   this->backLeft();
   this->forwardRight();  
 
@@ -144,19 +154,33 @@ void Wheels::turnLeft()
   }
 
   this->stop();
-  this->cnt0 = 0;
+  Serial.print("Left after ");
+  Serial.println(this->cnt0);
+    this->cnt1 = 0;
+    this->cnt0 = 0;
+
+  return toGo;
 }
 
-void Wheels::turnRight()
+int Wheels::turnRight(int angle)
 {
-  int toGo = (int)((double)35 / this->perHole);
-  toGo *= 2;
+  //40 to 90
+  //czyli mamy 4/9 obrót/stopień
+    this->cnt1 = 0;
+    this->cnt0 = 0;
+  int toGo = (int)(this->holesPerAngle * (float)angle);
+  Serial.print("Right before ");
+  Serial.println(this->cnt1);
   this->backRight();
   this->forwardLeft();  
 
-  while(this->cnt0 < toGo) {
+  while(this->cnt1 < toGo) {
   }
 
   this->stop();
-  this->cnt0 = 0;
+  Serial.print("Right after ");
+  Serial.println(this->cnt1);
+  this->cnt1 = 0;
+
+   return toGo;
 }

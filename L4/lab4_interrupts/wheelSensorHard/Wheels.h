@@ -27,11 +27,12 @@ class Wheels {
         void setSpeedLeft(uint8_t);
         void goForward(int cm);
         void goBack(int cm);
-        float diameter = 4.5;
+        float diameter = 6.1;
         float perHole = 3.14 * diameter / 20.0;
+        float holesPerAngle = 4.0 / 9.0;
         volatile int cnt0, cnt1;
-        void turnLeft();
-        void turnRight();
+        int turnLeft(int angle);
+        int turnRight(int angle);
 
     private: 
         int pinsRight[3];
