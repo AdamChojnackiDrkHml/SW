@@ -3,16 +3,13 @@
 
 #include "Wheels.h"
 #include "PinChangeInterrupt.h"
+#include "TimerOne.h"
 
 #define INTINPUT0 A0
 #define INTINPUT1 A1
 
-// piny dla sonaru (HC-SR04)
-#define TRIG A4
-#define ECHO A5
+#define BEEPER 13
 
-// pin kontroli serwo (musi być PWM)
-#define SERVO 6
 
 Servo serwo;
 
@@ -24,8 +21,14 @@ int cnt1;
 int MIN_DISTANCE = 42;
 
 
+
+long int intPeriod = 300000;
+
+
 #define SET_MOVEMENT(side,f,b) digitalWrite( side[0], f);\
                                digitalWrite( side[1], b)
+
+
 
 Wheels::Wheels() 
 { 
@@ -33,6 +36,7 @@ Wheels::Wheels()
   cnt1=0;
   Serial.begin(9500);
 }
+
 
 void increment() {
   if(digitalRead(INTINPUT1))
@@ -85,10 +89,14 @@ void Wheels::attach(int pRF, int pRB, int pRS, int pLF, int pLB, int pLS)
 {
     this->attachRight(pRF, pRB, pRS);
     this->attachLeft(pLF, pLB, pLS);
+    Serial.begin(9600);
     pinMode(INTINPUT0, INPUT);
     pinMode(INTINPUT1, INPUT);
     attachPCINT(digitalPinToPCINT(INTINPUT0), increment, CHANGE);
     attachPCINT(digitalPinToPCINT(INTINPUT1), increment, CHANGE);
+    pinMode(BEEPER, OUTPUT);
+    Timer1.initialize();
+    this->TimerUpdate();
 }
 
 void Wheels::forwardLeft() 
@@ -113,14 +121,18 @@ void Wheels::backRight()
 
 void Wheels::forward()
 {
+    this->TimerStop();
     this->forwardLeft();
     this->forwardRight();
 }
 
 void Wheels::back()
 {
+    this->TimerUpdate();
     this->backLeft();
     this->backRight();
+    Serial.print("ABBA");
+    
 }
 
 void Wheels::stopLeft()
@@ -135,6 +147,7 @@ void Wheels::stopRight()
 
 void Wheels::stop()
 {
+    this->TimerStop();
     this->stopLeft();
     this->stopRight();
 }
@@ -174,7 +187,7 @@ void Wheels::moveForward(uint8_t cm)
   uint16_t time = (100*cm)/45;
   while(cnt0 <= time) {
 //    if (cnt0 > 50) break;
-    Serial.print("");
+    Serial.println(cnt0);
 //    Serial.println(cnt0);
   }
   stop();
@@ -231,61 +244,17 @@ void Wheels::turnRight(uint8_t degree)
   stop();
 }
 
+// zmienia wartość pinu BEEPER
 
+static void Wheels::doBeep() {
+  digitalWrite(BEEPER, digitalRead(BEEPER) ^ 1);
+}
 
+void Wheels::TimerUpdate() {
+  Timer1.detachInterrupt();
+  Timer1.attachInterrupt(doBeep, intPeriod);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void Wheels::TimerStop() {
+  Timer1.detachInterrupt();
+}

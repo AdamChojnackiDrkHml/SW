@@ -55,8 +55,12 @@ class Wheels {
         void setSpeed(uint8_t);
         void setSpeedRight(uint8_t);
         void setSpeedLeft(uint8_t);
+        void TimerUpdate();
+        void TimerStop();
+        static void doBeep();
 
     private: 
+
         int pinsRight[3];
         int pinsLeft[3];
 //        int cnt0;

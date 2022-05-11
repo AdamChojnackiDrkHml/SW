@@ -5,16 +5,19 @@
 // bibliotekę TimerOne i zanistaluj.
 //
 
+
 Wheels w;
 
 void setup() {
   // put your setup code here, to run once:
-  w.attach(10,9,11,4,5,3);
+  w.attach(10,12,11,7,8,6);
   w.setSpeed(150);
+
+  w.back();
+  delay(5000);
+  w.forward();
 }
 
 void loop() {
 
 }
-
-
