@@ -107,8 +107,11 @@ void Wheels::attach(int pRF, int pRB, int pRS, int pLF, int pLB, int pLS)
     pinMode(TRIG, OUTPUT);    // TRIG startuje sonar
     pinMode(ECHO, INPUT);     // ECHO odbiera powracający impuls
     serwo.attach(SERVO);
+      serwo.write(0);
+      delay(1000);
     /* patrz przed siebie */
     resetSonarPosition();
+    setSpeed(100);
 }
 
 void Wheels::forwardLeft() 
@@ -223,7 +226,7 @@ void Wheels::moveBack(uint8_t cm)
 
 void Wheels::turnLeft(uint8_t degree)
 {
-  setSpeed(150);
+  setSpeed(220);
   forwardRight();
   backLeft();
   cnt0=0;
@@ -237,11 +240,12 @@ void Wheels::turnLeft(uint8_t degree)
 //    Serial.println(cnt1);
   }
   stop();
+  setSpeed(100);
 }
 
 void Wheels::turnRight(uint8_t degree)
 {
-  setSpeed(150);
+  setSpeed(220);
   forwardLeft();
   backRight();
   cnt0=0;
@@ -255,33 +259,19 @@ void Wheels::turnRight(uint8_t degree)
 //    Serial.println(cnt1);
   }
   stop();
+  setSpeed(100);
 }
 
 // zmienia wartość pinu BEEPER
 
 
 
-bool Wheels::isAngleFree(int angle) {
+bool Wheels::isAngleFree(int angle, int bonusTreshold) {
   unsigned long tot;      // czas powrotu (time-of-travel)
   unsigned int distance;
   Serial.println(angle);
   serwo.write(angle);
-  delay(1000);
-  serwo.write(45);
-//
-//Serial.println("start test");
-//
-//    serwo.write(0);
-//  delay(1000);
-//    serwo.write(90);
-//    delay(1000);
-//      serwo.write(180);
-//    delay(1000);
-//      serwo.write(90);
-//
-//
-//Serial.println("koniec test");      
-//  
+  delay(500);
 /* uruchamia sonar (puls 10 ms na `TRIGGER')
  * oczekuje na powrotny sygnał i aktualizuje
  */
@@ -295,58 +285,72 @@ bool Wheels::isAngleFree(int angle) {
  */
   distance = tot/58;
   Serial.println(distance);
-  if (distance != 0 && distance < MIN_DISTANCE) return false;
+  if (distance != 0 && distance < MIN_DISTANCE + bonusTreshold) return false;
   return true;
 }
 
 void Wheels::resetSonarPosition() {
   Serial.println("RESETING");
   serwo.write(90);
-  delay(1000);
+  delay(500);
 }
 
-bool Wheels::isFrontFree() {
-  unsigned long tot;      // czas powrotu (time-of-travel)
-  unsigned int distance;
-  digitalWrite(TRIG, HIGH);
-  delay(10);
-  digitalWrite(TRIG, LOW);
-  tot = pulseIn(ECHO, HIGH);
-/* prędkość dźwięku = 340m/s => 1 cm w 29 mikrosekund
- * droga tam i z powrotem, zatem:
- */
-  distance = tot/58;
-  Serial.println("Front");
-  Serial.println(distance);
-  if (distance != 0 && distance < MIN_DISTANCE) return false;
-  return true;
-}
 
 void Wheels::journey() {
   bool freeAngles[3] = {false};
+ 
   resetSonarPosition();
   forward();
-  while (isAngleFree(90)) {
-    pause(50);
+  while (isAngleFree(90, 0)) {
+    pause(10);
   }
 
   Serial.println("Przeszkoda");
   stop();
 
-  while (!(freeAngles[0] || freeAngles[1] || freeAngles[2])) {
-    for (int i = 0; i < 3; i++) {
-     freeAngles[i] = isAngleFree(i*90);
 
-     Serial.print("Angle");
-     Serial.print(i);
-     Serial.print(": ");
-     Serial.println(freeAngles[i]);
-     
-    }
-    resetSonarPosition();
-    if (freeAngles[0]) turnRight(90);
-    else if (freeAngles[2]) turnLeft(90);
-    else if (!freeAngles[1]) moveBack(20);
+  for (int i = 0; i < 3; i++) {
+   freeAngles[i] = isAngleFree(i*90, 0);
+
+   Serial.print("Angle");
+   Serial.print(i);
+   Serial.print(": ");
+   Serial.println(freeAngles[i]);
+   
   }
+
+  int counter = 0;
+  resetSonarPosition();
+  if (freeAngles[0])
+  {
+    counter = 0;
+    turnRight(90);
+  }
+  else if (freeAngles[2])
+  {
+    counter = 2;
+     turnLeft(90);
+  }
+  else if (!freeAngles[1])
+  {
+    moveBack(20);
+    counter = 1;
+  }
+
+  forward();
+  while (!isAngleFree(90 * counter, 10)) {
+    pause(20);
+  }
+
+  if(counter == 0)
+  {
+    turnLeft(90);
+  }
+  else if(counter == 2)
+  {
+    turnRight(90);
+  }
+
+ 
   Serial.println("Rozwiazano");
 }

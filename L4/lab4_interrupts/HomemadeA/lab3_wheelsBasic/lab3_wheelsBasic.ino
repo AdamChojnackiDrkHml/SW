@@ -11,11 +11,12 @@ Wheels w;
 void setup() {
   // put your setup code here, to run once:
   w.attach(10,12,5,7,8,6);
-  w.setSpeed(100);
+//  w.turnRight(90);
+//  w.turnLeft(90);
 
-    w.journey(); 
+   
 }
 
 void loop() {
-
+w.journey();  
 }

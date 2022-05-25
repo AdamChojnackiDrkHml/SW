@@ -58,7 +58,7 @@ class Wheels {
         void TimerUpdate();
         void TimerStop();
         static void doBeep();
-        bool isAngleFree(int angle);
+        bool isAngleFree(int angle, int bonusTreshold);
         void resetSonarPosition();
         bool isFrontFree();
         void journey();
