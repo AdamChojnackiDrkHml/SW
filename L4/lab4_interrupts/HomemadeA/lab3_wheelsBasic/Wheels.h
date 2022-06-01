@@ -63,6 +63,9 @@ class Wheels {
         bool isFrontFree();
         void journey();
         void fun();
+        void left();
+        void right();
+        void forwardWithStop();
 
     private: 
 

@@ -17,7 +17,7 @@
 
 // pin kontroli serwo (musi być PWM)
 #define SERVO 9
-int MIN_DISTANCE = 15;
+int MIN_DISTANCE = 30;
 
 Servo serwo;
 
@@ -111,7 +111,7 @@ void Wheels::attach(int pRF, int pRB, int pRS, int pLF, int pLB, int pLS)
       delay(1000);
     /* patrz przed siebie */
     resetSonarPosition();
-    setSpeed(100);
+    setSpeed(150);
 }
 
 void Wheels::forwardLeft() 
@@ -142,12 +142,38 @@ void Wheels::forward()
     this->forwardRight();
 }
 
+void Wheels::forwardWithStop()
+{
+    forward();
+    while (isAngleFree(80, 0)) {
+      pause(5);
+    }
+    stop();
+}
+
 void Wheels::back()
 {
   Serial.println("BACKING");
 
     this->backLeft();
     this->backRight();
+    
+}
+
+void Wheels::right()
+{
+    Serial.println("GOING");
+    
+    this->forwardLeft();
+    this->backRight();
+}
+
+void Wheels::left()
+{
+  Serial.println("BACKING");
+
+    this->backLeft();
+    this->forwardRight();
     
 }
 
@@ -291,7 +317,7 @@ bool Wheels::isAngleFree(int angle, int bonusTreshold) {
 
 void Wheels::resetSonarPosition() {
   Serial.println("RESETING");
-  serwo.write(90);
+  serwo.write(80);
   delay(500);
 }
 
@@ -302,7 +328,7 @@ void Wheels::journey() {
   resetSonarPosition();
   forward();
   while (isAngleFree(90, 0)) {
-    pause(10);
+    pause(5);
   }
 
   Serial.println("Przeszkoda");
